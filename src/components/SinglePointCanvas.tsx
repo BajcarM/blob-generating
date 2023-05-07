@@ -74,8 +74,14 @@ export default function NoiseCanvas() {
       />
       <div>
         <RangeSlider
+          label="Speed"
+          id={'speed'}
+          min={0.001}
+          max={0.05}
+          step={0.001}
           value={speed}
           onChange={setSpeed}
+          toFixed={3}
         />
       </div>
     </>

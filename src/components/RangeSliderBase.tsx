@@ -1,32 +1,55 @@
-import React, { useState } from 'react'
+import { styled } from '@stitches/react'
 
 type RangeSliderProps = {
+  id: string
+  label: string
+  min: number
+  max: number
+  step: number
   value: number
   onChange: (value: number) => void
+  toFixed?: number
 }
 
-export default function RangeSlider({ value, onChange }: RangeSliderProps) {
-  const [sliderValue, setSliderValue] = useState(value)
-
+export default function RangeSlider({
+  label,
+  id,
+  min,
+  max,
+  step,
+  value,
+  onChange,
+  toFixed,
+}: RangeSliderProps) {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(event.target.value)
-    setSliderValue(newValue)
+
     onChange(newValue)
   }
 
   return (
-    <label htmlFor="speed-slider">
-      Speed
+    <StyledLabel htmlFor={id}>
+      {label}
       <input
-        id="speed-slider"
+        id={id}
         type="range"
-        min={0.001}
-        max={0.05}
-        step={0.001}
-        value={sliderValue}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
         onChange={handleChange}
       />
-      <span>{sliderValue.toFixed(3)}</span>
-    </label>
+      <span>{value.toFixed(toFixed ?? 0)}</span>
+    </StyledLabel>
   )
 }
+
+const StyledLabel = styled('label', {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: '0.5rem',
+  fontSize: '1rem',
+  fontWeight: 'bold',
+  color: '#333',
+})
