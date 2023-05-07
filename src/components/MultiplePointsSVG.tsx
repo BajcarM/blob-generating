@@ -24,6 +24,7 @@ export default function MultiplePointsSVG() {
 
     for (let i = 0; i < numberOfPoints; i++) {
       const theta = angle * i + randomAngleOffset
+      console.log(theta, radius)
 
       newPoints.push({
         x: size / 2,
@@ -37,7 +38,7 @@ export default function MultiplePointsSVG() {
 
     setPoints(newPoints)
   }
-
+  console.log(setNumberOfPoints, points, createPoints)
   return (
     <>
       <div style={styleWrapper}>
