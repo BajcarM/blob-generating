@@ -1,15 +1,15 @@
 import { createNoise2D } from 'simplex-noise'
 import { useRef, useEffect, useState } from 'react'
-import stepBasedOnFramerateAndTimeElapsed from '../utils/stepBasedOnFramerateAndTimeElapsed'
-import RangeSlider from './RangeSliderBase'
+import stepBasedOnFramerateAndTimeElapsed from '../../utils/stepBasedOnFramerateAndTimeElapsed'
+import RangeSlider from '../RangeSliderBase'
 
 type Point = {
   x: number
   y: number
 }
 
-export default function NoiseCanvas() {
-  const [speed, setSpeed] = useState(0.001)
+export default function SinglePointCanvas() {
+  const [speed, setSpeed] = useState(0.01)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const requestRef = useRef<number>(0)

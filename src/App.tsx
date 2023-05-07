@@ -1,15 +1,19 @@
-import MultiplePointsSVG from './components/MultiplePointsSVG'
-import NoiseCanvas from './components/SinglePointCanvas'
+import MultiplePointsSVG from './components/sections/MultiplePointsSVG'
+import SinglePointCanvas from './components/sections/SinglePointCanvas'
 import './App.css'
+import SplineAroundPoints from './components/sections/SplineAroundPoints'
 
 function App() {
   return (
     <>
       <section>
-        <NoiseCanvas />
+        <SinglePointCanvas />
       </section>
       <section>
         <MultiplePointsSVG />
+      </section>
+      <section>
+        <SplineAroundPoints />
       </section>
     </>
   )

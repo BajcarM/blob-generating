@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react'
-import stepBasedOnFramerateAndTimeElapsed from '../utils/stepBasedOnFramerateAndTimeElapsed'
-import RangeSlider from './RangeSliderBase'
+import stepBasedOnFramerateAndTimeElapsed from '../../utils/stepBasedOnFramerateAndTimeElapsed'
+import RangeSlider from '../RangeSliderBase'
 import { createNoise2D } from 'simplex-noise'
 import * as Toggle from '@radix-ui/react-toggle'
 import { styled } from '@stitches/react'
@@ -145,7 +145,10 @@ export default function MultiplePointsSVG() {
     <>
       <h2>Multiple Points in SVG</h2>
       <div>
-        <StyledSVG viewBox={`0 0 ${size} ${size}`}>
+        <StyledSVG
+          viewBox={`0 0 ${size} ${size}`}
+          xmlns="http://www.w3.org/2000/svg"
+        >
           {showRadius && (
             <circle
               cx={centerX}
