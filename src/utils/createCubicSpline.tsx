@@ -1,10 +1,11 @@
-type Point = [number, number]
-
 /**
  * Creates a cubic spline path that goes through all the points and closes the path
  * @returns d attribute for a path element
  */
-export default function createCubicSpline(points: Point[], tension = 1) {
+export default function createCubicSpline(
+  points: [number, number][],
+  tension = 1,
+) {
   const firstPoint = points[0]
   const secondPoint = points[1]
   const lastPoint = points[points.length - 1]

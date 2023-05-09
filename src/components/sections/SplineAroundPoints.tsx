@@ -87,12 +87,7 @@ export default function SplineAroundPoints() {
         viewBox={`0 0 ${size} ${size}`}
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path
-          d={splinePath}
-          fill="none"
-          stroke="blue"
-          strokeWidth="2"
-        />
+        <StyledPath d={splinePath} />
         {points.map(([x, y], i) => (
           <circle
             key={i}
@@ -180,4 +175,11 @@ const StyledMenu = styled('menu', {
   gap: '1rem',
   width: '100%',
   margin: '1rem auto',
+})
+
+const StyledPath = styled('path', {
+  fill: 'none',
+  stroke: 'blue',
+  strokeWidth: '2',
+  transition: 'all 1s',
 })
