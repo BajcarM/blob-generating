@@ -1,27 +1,23 @@
 import { useMemo } from 'react'
-import { Point, createPointsRect } from '../utils/createPoints'
+import { createPointsElipse, createPointsRect } from '../utils/createPoints'
 import useAnimate from '../hooks/useAnimate'
 import createCubicSpline from '../utils/createCubicSpline'
 
-type PropsOld = {
-  shape?: 'elipse' | 'rect'
-  minWidth?: number
-  minHeight?: number
-  maxWidth?: number
-  maxHeight?: number
-  numberOfPoints?: number
-  tension?: number
-  speed?: number
-}
-
-type Props = {
-  shape?: 'elipse' | 'rect'
+export type BlobSvgProps = {
+  shape: 'elipse' | 'rect'
   innerBoxWidth?: number
   innerBoxHeight?: number
   movementSpace?: number
   minSpaceBetweenPoints?: number
   tension?: number
   speed?: number
+  visualHelpers?: {
+    showPoints?: boolean
+    showMovementOrigin?: boolean
+    showMovementRadius?: boolean
+    showInnerBox?: boolean
+    showBlobFill?: boolean
+  }
 }
 
 /**
@@ -36,26 +32,48 @@ export default function BlobSvg({
   innerBoxHeight = 300,
   movementSpace = 0.5,
   minSpaceBetweenPoints = 100,
-  tension = 1.5,
+  tension = 1,
   speed = 0.005,
-}: Props) {
+  visualHelpers = {
+    showPoints: false,
+    showMovementOrigin: false,
+    showMovementRadius: false,
+    showInnerBox: false,
+    showBlobFill: false,
+  },
+}: BlobSvgProps) {
   // max movement radius is half the distance between points
   const movementRadius = movementSpace * (minSpaceBetweenPoints / 2)
-  const padding = movementRadius
+  const padding = movementRadius * 2
   const svgWidth = innerBoxWidth + movementRadius * 4 + padding * 2
   const svgHeight = innerBoxHeight + movementRadius * 4 + padding * 2
 
   const initialPoints = useMemo(
     () =>
-      createPointsRect({
-        innerBoxWidth,
-        innerBoxHeight,
-        outerBoxWidth: svgWidth,
-        outerBoxHeight: svgHeight,
-        minSpaceBetweenPoints,
-        movementRadius,
-      }),
-    [innerBoxWidth, innerBoxHeight, minSpaceBetweenPoints, movementRadius],
+      shape === 'elipse'
+        ? createPointsElipse({
+            innerBoxWidth,
+            innerBoxHeight,
+            outerBoxWidth: svgWidth,
+            outerBoxHeight: svgHeight,
+            minSpaceBetweenPoints,
+            movementRadius,
+          })
+        : createPointsRect({
+            innerBoxWidth,
+            innerBoxHeight,
+            outerBoxWidth: svgWidth,
+            outerBoxHeight: svgHeight,
+            minSpaceBetweenPoints,
+            movementRadius,
+          }),
+    [
+      innerBoxWidth,
+      innerBoxHeight,
+      minSpaceBetweenPoints,
+      movementRadius,
+      shape,
+    ],
   )
 
   const points = useAnimate(initialPoints, speed, movementRadius)
@@ -72,17 +90,22 @@ export default function BlobSvg({
       xmlns="http://www.w3.org/2000/svg"
       style={{ border: '1px solid black' }}
     >
-      {false &&
+      <path
+        d={splinePath}
+        fill={visualHelpers.showBlobFill ? 'red' : 'none'}
+        stroke="red"
+      />
+      {visualHelpers.showMovementOrigin &&
         initialPoints.map((point, i) => (
           <circle
             key={i}
-            cx={point.x}
-            cy={point.y}
+            cx={point.originX}
+            cy={point.originY}
             r="2"
-            fill="blue"
+            fill="#375e8d"
           />
         ))}
-      {false &&
+      {visualHelpers.showPoints &&
         points.map((point, i) => (
           <circle
             key={i}
@@ -92,11 +115,38 @@ export default function BlobSvg({
             fill="red"
           />
         ))}
-      <path
-        d={splinePath}
-        fill="none"
-        stroke="red"
-      />
+      {visualHelpers.showMovementRadius &&
+        points.map((point, i) => (
+          <circle
+            key={i}
+            cx={point.originX}
+            cy={point.originY}
+            r={movementRadius}
+            fill="none"
+            stroke="#91c3ff"
+          />
+        ))}
+
+      {visualHelpers.showInnerBox &&
+        (shape === 'rect' ? (
+          <rect
+            x={movementRadius * 2 + padding}
+            y={movementRadius * 2 + padding}
+            width={innerBoxWidth}
+            height={innerBoxHeight}
+            fill="none"
+            stroke="#91c3ff"
+          />
+        ) : (
+          <ellipse
+            cx={svgWidth / 2}
+            cy={svgHeight / 2}
+            rx={innerBoxWidth / 2}
+            ry={innerBoxHeight / 2}
+            fill="none"
+            stroke="#91c3ff"
+          />
+        ))}
     </svg>
   )
 }

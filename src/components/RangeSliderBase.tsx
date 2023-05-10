@@ -52,4 +52,12 @@ const StyledLabel = styled('label', {
   fontSize: '1rem',
   fontWeight: 'bold',
   color: '#333',
+
+  '@media (prefers-color-scheme: dark)': {
+    color: '#eee',
+  },
+
+  '& > input': {
+    accentColor: '#ff5257',
+  },
 })

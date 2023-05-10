@@ -16,12 +16,22 @@ export type Point = {
   noiseTimelineY: number
 }
 
+function generatePointObj(x: number, y: number): Point {
+  return {
+    x: x,
+    y: y,
+    originX: x,
+    originY: y,
+    noiseTimelineX: Math.random() * 1000,
+    noiseTimelineY: Math.random() * 1000,
+  }
+}
+
 export function createPointsRect({
   innerBoxWidth,
   innerBoxHeight,
   outerBoxWidth,
   outerBoxHeight,
-
   minSpaceBetweenPoints,
   movementRadius,
 }: Props) {
@@ -32,35 +42,46 @@ export function createPointsRect({
   // Spacing for X and Y side so points are evenly spaced
   const xSpacing =
     middleBoxWidth / Math.floor(middleBoxWidth / minSpaceBetweenPoints)
+
   const ySpacing =
     middleBoxHeight / Math.floor(middleBoxHeight / minSpaceBetweenPoints)
 
   // Create points coordinates
+  // Math.floor is used to avoid floating point errors
   const pointsCoords: [number, number][] = []
 
+  // Top side
   let x = 0
   let y = 0
 
-  // Top side
-  while (x < middleBoxWidth) {
+  while (Math.floor(x) < middleBoxWidth) {
     pointsCoords.push([x, y])
     x += xSpacing
   }
 
   // Right side
-  while (y < middleBoxHeight) {
+  x = middleBoxWidth
+  y = 0
+
+  while (Math.floor(y) < middleBoxHeight) {
     pointsCoords.push([x, y])
     y += ySpacing
   }
 
   // Bottom side
-  while (x > 0) {
+  x = middleBoxWidth
+  y = middleBoxHeight
+
+  while (Math.floor(x) > 0) {
     pointsCoords.push([x, y])
     x -= xSpacing
   }
 
   // Left side
-  while (y > 0) {
+  x = 0
+  y = middleBoxHeight
+
+  while (Math.floor(y) > 0) {
     pointsCoords.push([x, y])
     y -= ySpacing
   }
@@ -81,26 +102,43 @@ export function createPointsRect({
   return points
 }
 
-function generatePointObj(x: number, y: number): Point {
-  return {
-    x: x,
-    y: y,
-    originX: x,
-    originY: y,
-    noiseTimelineX: Math.random() * 1000,
-    noiseTimelineY: Math.random() * 1000,
+export function createPointsElipse({
+  innerBoxWidth,
+  innerBoxHeight,
+  outerBoxWidth,
+  outerBoxHeight,
+  minSpaceBetweenPoints,
+  movementRadius,
+}: Props) {
+  // Elipse where the points will be placed
+  const elipseWidth = innerBoxWidth + movementRadius * 2
+  const elipseHeight = innerBoxHeight + movementRadius * 2
+
+  // Center of the outer box so the elipse is centered
+  const centerX = outerBoxWidth / 2
+  const centerY = outerBoxHeight / 2
+
+  // Radii of the elipse
+  const radiusX = elipseWidth / 2
+  const radiusY = elipseHeight / 2
+
+  // Calculate angle increment based on the number of points
+  const circumference =
+    2 * Math.PI * Math.sqrt((radiusX ** 2 + radiusY ** 2) / 2)
+  const numPoints = Math.floor(circumference / minSpaceBetweenPoints)
+  const angleIncrement = (2 * Math.PI) / numPoints
+
+  // Create points
+  const points: Point[] = []
+
+  for (let i = 0; i < numPoints; i++) {
+    const angle = angleIncrement * i
+
+    const x = centerX + radiusX * Math.cos(angle)
+    const y = centerY + radiusY * Math.sin(angle)
+
+    points.push(generatePointObj(x, y))
   }
-}
 
-function getPointOnElipse(
-  centerX: number,
-  centerY: number,
-  radiusX: number,
-  radiusY: number,
-  theta: number,
-) {
-  const x = centerX + radiusX * Math.cos(theta)
-  const y = centerY + radiusY * Math.sin(theta)
-
-  return { x, y }
+  return points
 }

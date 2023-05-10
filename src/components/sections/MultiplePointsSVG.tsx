@@ -319,6 +319,20 @@ const StyledToggle = styled(Toggle.Root, {
     outlineOffset: '6px',
     outlineColor: 'dodgerblue',
   },
+
+  // preffered dark mode styles
+  '@media (prefers-color-scheme: dark)': {
+    backgroundColor: '#333',
+    color: '#eee',
+
+    '&[data-state="off"]': {
+      backgroundColor: '#333',
+    },
+
+    '&:hover': {
+      backgroundColor: '#444',
+    },
+  },
 })
 
 const StyledSVG = styled('svg', {
