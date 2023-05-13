@@ -1,4 +1,14 @@
-type Props = {
+type PropsRect = {
+  innerBoxWidth: number
+  innerBoxHeight: number
+  outerBoxWidth: number
+  outerBoxHeight: number
+  minSpaceBetweenPoints: number
+  movementRadius: number
+  movementRadiusCorners: number
+}
+
+type PropsElipse = {
   innerBoxWidth: number
   innerBoxHeight: number
   outerBoxWidth: number
@@ -12,29 +22,39 @@ export type Point = {
   y: number
   originX: number
   originY: number
+  movementRadius: number
   noiseTimelineX: number
   noiseTimelineY: number
+  corner?: boolean
 }
 
-function generatePointObj(x: number, y: number): Point {
+function generatePointObj(
+  x: number,
+  y: number,
+  movementRadius: number,
+  corner: boolean,
+): Point {
   return {
     x: x,
     y: y,
     originX: x,
     originY: y,
+    movementRadius: movementRadius,
     noiseTimelineX: Math.random() * 1000,
     noiseTimelineY: Math.random() * 1000,
+    corner: corner,
   }
 }
 
-export function createPointsRect({
+export function createRectPoints({
   innerBoxWidth,
   innerBoxHeight,
   outerBoxWidth,
   outerBoxHeight,
   minSpaceBetweenPoints,
   movementRadius,
-}: Props) {
+  movementRadiusCorners,
+}: PropsRect) {
   // Box where the points will be placed
   const middleBoxWidth = innerBoxWidth + movementRadius * 2
   const middleBoxHeight = innerBoxHeight + movementRadius * 2
@@ -48,41 +68,57 @@ export function createPointsRect({
 
   // Create points coordinates
   // Math.floor is used to avoid floating point errors
-  const pointsCoords: [number, number][] = []
+  const pointsCoords: [number, number, boolean][] = []
 
-  // Top side
+  // Top left corner
   let x = 0
   let y = 0
 
-  while (Math.floor(x) < middleBoxWidth) {
-    pointsCoords.push([x, y])
+  pointsCoords.push([x, y, true])
+  x += xSpacing
+
+  // Top side
+  while (Math.ceil(x) < middleBoxWidth) {
+    pointsCoords.push([x, y, false])
     x += xSpacing
   }
 
-  // Right side
+  // Top right corner
   x = middleBoxWidth
   y = 0
 
-  while (Math.floor(y) < middleBoxHeight) {
-    pointsCoords.push([x, y])
+  pointsCoords.push([x, y, true])
+  y += ySpacing
+
+  // Right side
+  while (Math.ceil(y) < middleBoxHeight) {
+    pointsCoords.push([x, y, false])
     y += ySpacing
   }
 
-  // Bottom side
+  // Bottom right corner
   x = middleBoxWidth
   y = middleBoxHeight
 
+  pointsCoords.push([x, y, true])
+  x -= xSpacing
+
+  // Bottom side
   while (Math.floor(x) > 0) {
-    pointsCoords.push([x, y])
+    pointsCoords.push([x, y, false])
     x -= xSpacing
   }
 
-  // Left side
+  // Bottom left corner
   x = 0
   y = middleBoxHeight
 
+  pointsCoords.push([x, y, true])
+  y -= ySpacing
+
+  // Left side
   while (Math.floor(y) > 0) {
-    pointsCoords.push([x, y])
+    pointsCoords.push([x, y, false])
     y -= ySpacing
   }
 
@@ -91,25 +127,30 @@ export function createPointsRect({
   const offsetY = (outerBoxHeight - middleBoxHeight) / 2
 
   // Create points objects
-  const points = pointsCoords.map(([x, y]) => {
+  const points = pointsCoords.map(([x, y, corner]) => {
     // Add the offset
     x += offsetX
     y += offsetY
 
-    return generatePointObj(x, y)
+    return generatePointObj(
+      x,
+      y,
+      corner ? movementRadiusCorners : movementRadius,
+      corner,
+    )
   })
 
   return points
 }
 
-export function createPointsElipse({
+export function createEllipsePoints({
   innerBoxWidth,
   innerBoxHeight,
   outerBoxWidth,
   outerBoxHeight,
   minSpaceBetweenPoints,
   movementRadius,
-}: Props) {
+}: PropsElipse) {
   // Elipse where the points will be placed
   const elipseWidth = innerBoxWidth + movementRadius * 2
   const elipseHeight = innerBoxHeight + movementRadius * 2
@@ -137,7 +178,7 @@ export function createPointsElipse({
     const x = centerX + radiusX * Math.cos(angle)
     const y = centerY + radiusY * Math.sin(angle)
 
-    points.push(generatePointObj(x, y))
+    points.push(generatePointObj(x, y, movementRadius, false))
   }
 
   return points

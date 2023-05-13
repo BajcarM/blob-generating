@@ -12,6 +12,7 @@ export default function useAnimate(
   pointsArray: Point[],
   movementSpeed: number,
   movementRadius: number,
+  play: boolean,
 ) {
   // animation:
   const previousTime = useRef(0)
@@ -25,10 +26,12 @@ export default function useAnimate(
 
   // Start the animation
   useLayoutEffect(() => {
+    if (!play) return
+
     animationRequestRef.current = requestAnimationFrame(animate)
 
     return () => cancelAnimationFrame(animationRequestRef.current)
-  }, [pointsArray, movementSpeed, movementRadius])
+  }, [pointsArray, movementSpeed, movementRadius, play])
 
   function animate(time: DOMHighResTimeStamp) {
     // calculate timeElapsed and update lastTime
@@ -48,8 +51,8 @@ export default function useAnimate(
       const noiseY = noise2D(0, point.noiseTimelineY)
 
       // Move the point in relation to the noise
-      point.x = point.originX + noiseX * movementRadius
-      point.y = point.originY + noiseY * movementRadius
+      point.x = point.originX + noiseX * point.movementRadius
+      point.y = point.originY + noiseY * point.movementRadius
 
       // Increment the offset for the next frame
       const stepSize = stepBasedOnFramerateAndTimeElapsed(

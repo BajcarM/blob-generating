@@ -1,16 +1,20 @@
-import { useMemo } from 'react'
-import { createPointsElipse, createPointsRect } from '../utils/createPoints'
+import { RefObject, useMemo } from 'react'
+import { createEllipsePoints, createRectPoints } from '../utils/createPoints'
 import useAnimate from '../hooks/useAnimate'
 import createCubicSpline from '../utils/createCubicSpline'
 
-export type BlobSvgProps = {
+export interface BlobSvgProps extends React.SVGProps<SVGSVGElement> {
   shape: 'elipse' | 'rect'
   innerBoxWidth?: number
   innerBoxHeight?: number
-  movementSpace?: number
-  minSpaceBetweenPoints?: number
+  elementRef?: HTMLElement | RefObject<HTMLElement> | null
+  movementRatio?: number
+  cornerMovementRatio?: number
+  minDistanceBetweenPoints?: number
   tension?: number
   speed?: number
+  play?: boolean
+
   visualHelpers?: {
     showPoints?: boolean
     showMovementOrigin?: boolean
@@ -18,22 +22,20 @@ export type BlobSvgProps = {
     showInnerBox?: boolean
     showBlobFill?: boolean
   }
-}
 
-/**
- * @param movementCoeficient between 0 and 1
- * @param minSpaceBetweenPoints should be less than smallest dimension of inner box
- * @returns
- */
+  pathProps?: React.SVGProps<SVGPathElement>
+}
 
 export default function BlobSvg({
   shape = 'elipse',
   innerBoxWidth = 300,
-  innerBoxHeight = 300,
-  movementSpace = 0.5,
-  minSpaceBetweenPoints = 100,
+  innerBoxHeight = 200,
+  movementRatio = 0.5,
+  cornerMovementRatio = 0.1,
+  minDistanceBetweenPoints = 100,
   tension = 1,
   speed = 0.005,
+  play = true,
   visualHelpers = {
     showPoints: false,
     showMovementOrigin: false,
@@ -41,9 +43,14 @@ export default function BlobSvg({
     showInnerBox: false,
     showBlobFill: false,
   },
+
+  pathProps = {},
+  ...props
 }: BlobSvgProps) {
-  // max movement radius is half the distance between points
-  const movementRadius = movementSpace * (minSpaceBetweenPoints / 2)
+  // Max movement radius is half the distance between points
+  const movementRadius = movementRatio * (minDistanceBetweenPoints / 2)
+  const movementRadiusCorners =
+    cornerMovementRatio * (minDistanceBetweenPoints / 2)
   const padding = movementRadius * 2
   const svgWidth = innerBoxWidth + movementRadius * 4 + padding * 2
   const svgHeight = innerBoxHeight + movementRadius * 4 + padding * 2
@@ -51,32 +58,34 @@ export default function BlobSvg({
   const initialPoints = useMemo(
     () =>
       shape === 'elipse'
-        ? createPointsElipse({
-            innerBoxWidth,
-            innerBoxHeight,
+        ? createEllipsePoints({
+            innerBoxWidth: innerBoxWidth,
+            innerBoxHeight: innerBoxHeight,
             outerBoxWidth: svgWidth,
             outerBoxHeight: svgHeight,
-            minSpaceBetweenPoints,
+            minSpaceBetweenPoints: minDistanceBetweenPoints,
             movementRadius,
           })
-        : createPointsRect({
+        : createRectPoints({
             innerBoxWidth,
             innerBoxHeight,
             outerBoxWidth: svgWidth,
             outerBoxHeight: svgHeight,
-            minSpaceBetweenPoints,
+            minSpaceBetweenPoints: minDistanceBetweenPoints,
             movementRadius,
+            movementRadiusCorners,
           }),
     [
       innerBoxWidth,
       innerBoxHeight,
-      minSpaceBetweenPoints,
+      minDistanceBetweenPoints,
       movementRadius,
+      movementRadiusCorners,
       shape,
     ],
   )
 
-  const points = useAnimate(initialPoints, speed, movementRadius)
+  const points = useAnimate(initialPoints, speed, movementRadius, play)
 
   const pointsCoords = points.map<[number, number]>((point) => [
     point.x,
@@ -87,14 +96,19 @@ export default function BlobSvg({
   return (
     <svg
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+      width={svgWidth}
+      height={svgHeight}
       xmlns="http://www.w3.org/2000/svg"
-      style={{ border: '1px solid black' }}
+      {...props}
     >
       <path
         d={splinePath}
         fill={visualHelpers.showBlobFill ? 'red' : 'none'}
         stroke="red"
+        {...pathProps}
       />
+
+      {/* Visual helpers start */}
       {visualHelpers.showMovementOrigin &&
         initialPoints.map((point, i) => (
           <circle
@@ -121,7 +135,7 @@ export default function BlobSvg({
             key={i}
             cx={point.originX}
             cy={point.originY}
-            r={movementRadius}
+            r={point.movementRadius}
             fill="none"
             stroke="#91c3ff"
           />
@@ -147,6 +161,7 @@ export default function BlobSvg({
             stroke="#91c3ff"
           />
         ))}
+      {/* Visual helpers end */}
     </svg>
   )
 }

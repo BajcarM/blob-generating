@@ -3,6 +3,8 @@ import BlobSvg, { BlobSvgProps } from '../BlobSvg'
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
 import RangeSlider from '../RangeSliderBase'
 import { styled } from '@stitches/react'
+import { Toggle } from '@radix-ui/react-toggle'
+
 type ReducerAction = {
   [K in keyof BlobSvgProps]?: {
     type: K
@@ -14,10 +16,12 @@ const INITIAL_STATE: BlobSvgProps = {
   shape: 'rect',
   innerBoxWidth: 300,
   innerBoxHeight: 200,
-  movementSpace: 0.5,
-  minSpaceBetweenPoints: 100,
+  movementRatio: 0.5,
+  cornerMovementRatio: 0.1,
+  minDistanceBetweenPoints: 100,
   tension: 1,
   speed: 0.005,
+  play: true,
   visualHelpers: {
     showPoints: false,
     showMovementOrigin: false,
@@ -59,8 +63,13 @@ export default function FullExample1() {
     <>
       <h2>Example with working svg component </h2>
       <StyledDiv>
-        <BlobSvg {...blobOptions} />
+        <BlobSvg
+          {...blobOptions}
+          style={{ border: '1px solid black' }}
+        />
       </StyledDiv>
+
+      {/* Controls */}
       <StyledMenu>
         <RangeSlider
           label={`Inner ${
@@ -95,30 +104,45 @@ export default function FullExample1() {
           }
         />
         <RangeSlider
-          label="Movement Space"
-          id={'movementSpace'}
+          label="Movement Ratio"
+          id={'movementRatio'}
           min={0.1}
           max={1}
           step={0.1}
-          value={blobOptions.movementSpace ?? 0}
+          value={blobOptions.movementRatio ?? 0}
           onChange={(value) =>
             dispatchBlobOptions({
-              type: 'movementSpace',
+              type: 'movementRatio',
               payload: value,
             })
           }
           toFixed={1}
         />
         <RangeSlider
-          label=" Min Space Between Points"
-          id={' minSpaceBetweenPoints'}
+          label="Movement Ratio Corners"
+          id={'cornerMovementRatio'}
+          min={0.1}
+          max={1}
+          step={0.1}
+          value={blobOptions.cornerMovementRatio ?? 0}
+          onChange={(value) =>
+            dispatchBlobOptions({
+              type: 'cornerMovementRatio',
+              payload: value,
+            })
+          }
+          toFixed={1}
+        />
+        <RangeSlider
+          label="Min Distance Between Points"
+          id={'minDistanceBetweenPoints'}
           min={50}
           max={200}
           step={50}
-          value={blobOptions.minSpaceBetweenPoints ?? 0}
+          value={blobOptions.minDistanceBetweenPoints ?? 0}
           onChange={(value) =>
             dispatchBlobOptions({
-              type: 'minSpaceBetweenPoints',
+              type: 'minDistanceBetweenPoints',
               payload: value,
             })
           }
@@ -127,7 +151,7 @@ export default function FullExample1() {
           label="Tension"
           id={'tension'}
           min={0.1}
-          max={5}
+          max={1.5}
           step={0.01}
           value={blobOptions.tension ?? 0}
           onChange={(value) =>
@@ -153,6 +177,8 @@ export default function FullExample1() {
           }
           toFixed={3}
         />
+
+        {/* Visual helpers toggle */}
         <StyledToggle
           type="multiple"
           onValueChange={handleVisualHelpersChange}
@@ -171,9 +197,11 @@ export default function FullExample1() {
             Show Blob Fill
           </StyledToggleItem>
         </StyledToggle>
+
+        {/* Shape toggle */}
         <StyledToggle
           type="single"
-          defaultValue="elipse"
+          defaultValue={blobOptions.shape}
           onValueChange={(value: typeof blobOptions.shape) =>
             dispatchBlobOptions({
               type: 'shape',
@@ -184,6 +212,19 @@ export default function FullExample1() {
           <StyledToggleItem value="elipse">Elipse</StyledToggleItem>
           <StyledToggleItem value="rect">Rect</StyledToggleItem>
         </StyledToggle>
+
+        {/* Play toggle */}
+        <StyledSingleToggle
+          pressed={blobOptions.play}
+          onPressedChange={(value: typeof blobOptions.play) =>
+            dispatchBlobOptions({
+              type: 'play',
+              payload: value,
+            })
+          }
+        >
+          {blobOptions.play ? 'Pause' : 'Play'} Animation
+        </StyledSingleToggle>
       </StyledMenu>
     </>
   )
@@ -235,4 +276,8 @@ const StyledToggleItem = styled(ToggleGroup.Item, {
   '&:hover': {
     boxShadow: '0 0 0 1px #ff5257',
   },
+})
+
+const StyledSingleToggle = styled(Toggle, {
+  ...StyledToggleItem,
 })
