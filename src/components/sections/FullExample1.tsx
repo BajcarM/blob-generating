@@ -1,5 +1,5 @@
 import { useReducer } from 'react'
-import BlobSvg, { BlobSvgProps } from '../BlobSvg'
+import { BlobSvgProps, BlobSvg } from '../BlobSvg'
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
 import RangeSlider from '../RangeSliderBase'
 import { styled } from '@stitches/react'
@@ -13,7 +13,7 @@ type ReducerAction = {
 }[keyof BlobSvgProps]
 
 const INITIAL_STATE: BlobSvgProps = {
-  shape: 'rect',
+  shape: 'elipse',
   innerBoxWidth: 300,
   innerBoxHeight: 200,
   movementRatio: 0.5,
@@ -27,7 +27,7 @@ const INITIAL_STATE: BlobSvgProps = {
     showMovementOrigin: false,
     showMovementRadius: false,
     showInnerBox: false,
-    showBlobFill: false,
+    showBlobFill: true,
   },
 }
 
@@ -66,6 +66,7 @@ export default function FullExample1() {
         <BlobSvg
           {...blobOptions}
           style={{ border: '1px solid black' }}
+          ref={null}
         />
       </StyledDiv>
 
