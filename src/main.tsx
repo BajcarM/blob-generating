@@ -10,7 +10,7 @@ import SoftBody from './routes/soft-body/index.tsx'
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/blob-generating/',
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
@@ -19,11 +19,11 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/random-movement',
+        path: 'random-movement',
         element: <RandomMovement />,
       },
       {
-        path: '/soft-body',
+        path: 'soft-body',
         element: <SoftBody />,
       },
     ],

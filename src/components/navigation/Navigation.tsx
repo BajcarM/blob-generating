@@ -1,21 +1,20 @@
 import { css, styled } from '@stitches/react'
 import { NavLink } from 'react-router-dom'
 import { BlobSvgProps, BlobSvg } from '../BlobSvg'
-import useMeasure from '../../hooks/useMeasure'
 import useMeasureArray from '../../hooks/useMeasureArray'
 import { useState } from 'react'
 
 const NAVIGATION_LINKS = [
   {
-    to: '/',
+    to: '/blob-generating/',
     text: 'Home',
   },
   {
-    to: '/random-movement',
+    to: '/blob-generating/random-movement',
     text: 'Random Movement',
   },
   {
-    to: '/soft-body',
+    to: '/blob-generating/soft-body',
     text: 'Soft Body',
   },
 ]
