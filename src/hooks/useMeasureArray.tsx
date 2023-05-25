@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const useMeasure = <T extends HTMLElement>() => {
+const useMeasure = <T extends Element>() => {
   const refs = useRef<(T | null)[]>([])
   const [measurements, setMeasurements] = useState<DOMRect[]>([])
 
