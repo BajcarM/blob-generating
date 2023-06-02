@@ -22,14 +22,14 @@ const SoftBody = () => {
     },
   ])
 
-  const [springs, setSprings] = useState<Spring[]>([
+  const springs: Spring[] = [
     {
       point1: 0,
       point2: 1,
       stiffness: 1,
       restLength: 100,
     },
-  ])
+  ]
 
   const pointsCoords = points.map((point) => point.position)
   const springsCoords: [Vector2D, Vector2D][] = springs.map((spring) => [

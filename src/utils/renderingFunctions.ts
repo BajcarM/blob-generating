@@ -1,4 +1,4 @@
-import { SpringShape, Vector2D } from '../types'
+import { SpringShape } from '../types'
 
 type ElementsToCreate = {
   points?: boolean

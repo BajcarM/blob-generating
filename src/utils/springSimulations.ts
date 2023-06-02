@@ -106,17 +106,11 @@ export function animateSpringShapeSimple(
 
   // Track movement of the mouse relative to SVG for collision detection
   let mousePosition: Vector2D = [0, 0]
-  let mouseVelocity: Vector2D = [0, 0]
   svgElement.addEventListener('pointermove', (event) => {
     const { x: svgX, y: svgY } = svgElement.getBoundingClientRect()
-    const [mX, mY] = mousePosition
-    const { clientX: eX, clientY: eY } = event
+    const { clientX, clientY } = event
 
-    const [newMX, newMY] = [eX - svgX, eY - svgY]
-
-    mouseVelocity = [newMX - mX, newMY - mY]
-
-    mousePosition = [eX - svgX, eY - svgY]
+    mousePosition = [clientX - svgX, clientY - svgY]
   })
 
   /**
@@ -136,12 +130,7 @@ export function animateSpringShapeSimple(
       elapsedTime,
     )
 
-    points = handlePointsWithMouseCollision(
-      points,
-      mousePosition,
-      100,
-      mouseVelocity,
-    )
+    points = handlePointsWithMouseCollision(points, mousePosition, 100)
 
     // Update the pointsInSVG' positions
     points.forEach((point, index) => {

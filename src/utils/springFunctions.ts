@@ -285,14 +285,12 @@ function dotProduct(a: Vector2D, b: Vector2D) {
  * @param points - Array of points.
  * @param mousePosition - The coordinates of the mouse [x, y].
  * @param mouseRadius - The radius of the mouse interaction area.
- * @param mouseVelocity - The velocity vector of the mouse [x, y].
  * @returns The updated array of points after handling collision.
  */
 export function handlePointsWithMouseCollision(
   points: Point[],
   mousePosition: Vector2D,
   mouseRadius: number,
-  mouseVelocity: Vector2D,
 ) {
   const updatedPoints: Point[] = points.map((point) => {
     const { position, controlled, velocity } = point
