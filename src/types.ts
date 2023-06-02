@@ -14,3 +14,8 @@ export type Spring = {
   stiffness: number // Stiffness coefficient of the spring
   restLength: number // Rest length of the spring
 }
+
+export type SpringShape = {
+  points: Point[]
+  springs: Spring[]
+}

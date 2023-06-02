@@ -29,11 +29,23 @@ export function calculateDistanceBetweenPoints(
  * @returns The resultant force vector.
  */
 export function calculateResultantForce(forces: Vector2D[]) {
+  const maxForce = 100
   let resultantForce: Vector2D = [0, 0]
 
+  // Calculate the resultant force vector
   for (const forceVector of forces) {
     resultantForce[0] += forceVector[0]
     resultantForce[1] += forceVector[1]
+  }
+
+  // Check against the maximum force
+  const forceMagnitude = Math.hypot(resultantForce[0], resultantForce[1])
+
+  if (forceMagnitude > maxForce) {
+    const scaleFactor = maxForce / forceMagnitude
+
+    resultantForce[0] *= scaleFactor
+    resultantForce[1] *= scaleFactor
   }
 
   return resultantForce
@@ -104,12 +116,21 @@ export function updatePointsVelocityAndPosition(
  *
  * @param springs - Array of springs.
  * @param points - Array of points.
+ * @param options - Optional options for force calculation like gravity.
  * @returns The updated array of points.
  */
-export function applyForcesBetweenPoints(springs: Spring[], points: Point[]) {
-  const updatedPoints = points.map((point) => ({
+export function applyForcesBetweenPoints(
+  springs: Spring[],
+  points: Point[],
+  gravity = false,
+) {
+  // Zero vector if gravity is disabled
+  const gravityVector: Vector2D = gravity ? [0, 9.81] : [0, 0]
+
+  // Initialize forces array as an empty array with or without gravity
+  const updatedPoints: Point[] = points.map((point) => ({
     ...point,
-    forces: [] as Vector2D[], // Initialize forces array as an empty array
+    forces: [gravityVector],
   }))
 
   for (const spring of springs) {
@@ -226,7 +247,7 @@ export function movePointToCircle(
   point: Vector2D,
   center: Vector2D,
   radius: number,
-) {
+): Vector2D {
   const [px, py] = point
   const [cx, cy] = center
 
@@ -244,4 +265,83 @@ export function movePointToCircle(
   const newY = cy + dy * scaleFactor
 
   return [newX, newY]
+}
+
+/**
+ * Calculates the dot product of two vectors.
+ *
+ * @param a - The first vector.
+ * @param b - The second vector.
+ * @returns The dot product of the two vectors.
+ */
+function dotProduct(a: Vector2D, b: Vector2D) {
+  return a[0] * b[0] + a[1] * b[1]
+}
+
+/**
+ * Handles points' collision with the mouse position by moving intersecting points to the circle around the mouse
+ * and calculating the new velocity based on the bounce angle.
+ *
+ * @param points - Array of points.
+ * @param mousePosition - The coordinates of the mouse [x, y].
+ * @param mouseRadius - The radius of the mouse interaction area.
+ * @param mouseVelocity - The velocity vector of the mouse [x, y].
+ * @returns The updated array of points after handling collision.
+ */
+export function handlePointsWithMouseCollision(
+  points: Point[],
+  mousePosition: Vector2D,
+  mouseRadius: number,
+  mouseVelocity: Vector2D,
+) {
+  const updatedPoints: Point[] = points.map((point) => {
+    const { position, controlled, velocity } = point
+
+    if (controlled) {
+      // Skip processing for controlled points
+      return point
+    }
+
+    const isIntersecting =
+      calculateDistanceBetweenPoints(mousePosition, position) < mouseRadius
+
+    if (!isIntersecting) {
+      // No collision, skip moving the point
+      return point
+    }
+
+    // Calculate the bounce direction vector
+    const bounceDirection: Vector2D = [
+      position[0] - mousePosition[0],
+      position[1] - mousePosition[1],
+    ]
+    const bounceDirectionMagnitude = Math.hypot(
+      bounceDirection[0],
+      bounceDirection[1],
+    )
+    const normalizedBounceDirection: Vector2D = [
+      bounceDirection[0] / bounceDirectionMagnitude,
+      bounceDirection[1] / bounceDirectionMagnitude,
+    ]
+
+    // Calculate the component of the velocity parallel to the bounce direction
+    const parallelVelocity = dotProduct(velocity, normalizedBounceDirection)
+
+    // Calculate the new velocity
+    const reflectionFactor = 2 * parallelVelocity
+    const newVelocity: Vector2D = [
+      velocity[0] - reflectionFactor * normalizedBounceDirection[0],
+      velocity[1] - reflectionFactor * normalizedBounceDirection[1],
+    ]
+
+    const newPosition = movePointToCircle(position, mousePosition, mouseRadius)
+
+    return {
+      ...point,
+      velocity: newVelocity,
+      position: newPosition,
+    }
+  })
+
+  return updatedPoints
 }

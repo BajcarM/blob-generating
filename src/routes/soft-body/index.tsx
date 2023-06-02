@@ -55,7 +55,7 @@ const SoftBody = () => {
         />
       </ContainerSection>
       <ContainerSection>
-        <h2>Example 2</h2>
+        <h2>Example 2 with spring, gravity and collision with mouse</h2>
         <SpringExample2 />
       </ContainerSection>
     </>
