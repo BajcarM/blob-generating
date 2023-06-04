@@ -6,19 +6,19 @@ import { useState } from 'react'
 
 const NAVIGATION_LINKS = [
   {
-    to: '/blob-generating/',
+    to: '/',
     text: 'Home',
   },
   {
-    to: '/blob-generating/random-movement',
+    to: '/random-movement',
     text: 'Random Movement',
   },
   {
-    to: '/blob-generating/soft-body',
+    to: '/soft-body',
     text: 'Soft Body',
   },
   {
-    to: '/blob-generating/shapes',
+    to: '/shapes',
     text: 'Shapes',
   },
 ]

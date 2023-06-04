@@ -1,8 +1,5 @@
 import { styled } from '@stitches/react'
-import {
-  createSuperellipsePath,
-  createEvenlySpacedPointsOnPath,
-} from '../../utils/shapeFunctions'
+import { createSuperellipsePath } from '../../utils/shapeFunctions'
 import { useReducer } from 'react'
 import RangeSlider from '../RangeSliderBase'
 
