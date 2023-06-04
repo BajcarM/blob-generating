@@ -86,3 +86,20 @@ li {
   margin: 0 auto;
   padding: 0 1rem;
 }
+
+.math-equation {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+figure {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+figcaption {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #777;
+}

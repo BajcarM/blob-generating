@@ -7,10 +7,11 @@ import ErrorPage from './routes/error-page.tsx'
 import Home from './routes/home/index.tsx'
 import RandomMovement from './routes/random-movement/index.tsx'
 import SoftBody from './routes/soft-body/index.tsx'
+import { Shapes } from './routes/shapes/index.tsx'
 
 const router = createBrowserRouter([
   {
-    path: '/blob-generating/',
+    path: '/blob-generating',
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: 'soft-body',
         element: <SoftBody />,
+      },
+      {
+        path: 'shapes',
+        element: <Shapes />,
       },
     ],
   },

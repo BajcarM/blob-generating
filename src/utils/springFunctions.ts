@@ -67,11 +67,11 @@ export function updatePointsVelocityAndPosition(
 ) {
   const elapsedTimeSec = elapsedTimeMs / 1000
 
-  const updatedPoints = points.map((point) => {
+  const updatedPoints: Point[] = points.map((point) => {
     const { position, velocity, mass, controlled, forces } = point
 
     if (controlled) {
-      return { ...point, velocity: [0, 0] as Vector2D }
+      return { ...point, velocity: [0, 0] }
     }
 
     const resultantForce = calculateResultantForce(forces)
@@ -140,6 +140,10 @@ export function applyForcesBetweenPoints(
     const p2 = updatedPoints[point2]
 
     const distance = calculateDistanceBetweenPoints(p1.position, p2.position)
+
+    // Skip processing if points are on top of each other so no force is applied
+    if (distance === 0) continue
+
     const displacement = distance - restLength
 
     const forceMagnitude = stiffness * displacement

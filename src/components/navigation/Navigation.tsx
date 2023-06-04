@@ -17,6 +17,10 @@ const NAVIGATION_LINKS = [
     to: '/blob-generating/soft-body',
     text: 'Soft Body',
   },
+  {
+    to: '/blob-generating/shapes',
+    text: 'Shapes',
+  },
 ]
 
 const BLOB_SVG_PROPS: BlobSvgProps = {

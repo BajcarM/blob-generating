@@ -3,6 +3,7 @@ import SpringExample1 from '../../components/SpringExample1'
 import ContainerSection from '../../components/sections/ContainerSection'
 import { Point, Spring, Vector2D } from '../../types'
 import SpringExample2 from '../../components/SpringExample2'
+import { SpringExample3 } from '../../components/SpringExample3'
 
 const SoftBody = () => {
   const [points, setPoints] = useState<Point[]>([
@@ -38,7 +39,7 @@ const SoftBody = () => {
   ])
 
   return (
-    <>
+    <div className="containerS">
       <h1>Soft Body</h1>
       <ContainerSection>
         <SpringExample1
@@ -58,7 +59,17 @@ const SoftBody = () => {
         <h2>Example 2 with spring, gravity and collision with mouse</h2>
         <SpringExample2 />
       </ContainerSection>
-    </>
+      <ContainerSection>
+        <h2 id="soft-body-full">Putting it All Together</h2>
+        <p>
+          Let's bring everything together and create a spring body in the shape
+          of a superellipse. This spring body will have the added effect of
+          collision with the mouse. You can toggle the visibility of the points,
+          springs, and path.
+        </p>
+        <SpringExample3 />
+      </ContainerSection>
+    </div>
   )
 }
 

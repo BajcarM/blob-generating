@@ -2,6 +2,7 @@ import { SpringShape } from '../types'
 
 type ElementsToCreate = {
   points?: boolean
+  differentBodyAndSkeleton?: boolean
   pointAttrs?: {
     [attr: string]: string
   }
@@ -38,7 +39,7 @@ export function createElementsInSVG(
   const pointsInSVG: SVGCircleElement[] = []
 
   if (elementsToCreate.points) {
-    points.forEach((point) => {
+    points.forEach((point, index) => {
       const [cx, cy] = point.position
 
       const circle = document.createElementNS(
@@ -53,9 +54,17 @@ export function createElementsInSVG(
         })
       }
 
+      // Different skeleton color and size
+      if (elementsToCreate.differentBodyAndSkeleton) {
+        if (index > points.length / 2 - 1) {
+          circle.setAttribute('r', '2')
+          circle.setAttribute('fill', 'green')
+        }
+      }
+
       // Apply circle position from SpringShape
-      circle.setAttribute('cx', cx.toString())
-      circle.setAttribute('cy', cy.toString())
+      circle.setAttribute('cx', `${cx}`)
+      circle.setAttribute('cy', `${cy}`)
 
       svgElement.appendChild(circle)
       pointsInSVG.push(circle)
@@ -87,21 +96,36 @@ export function createElementsInSVG(
       }
 
       // Apply line position from SpringShape
-      line.setAttribute('x1', x1.toString())
-      line.setAttribute('y1', y1.toString())
-      line.setAttribute('x2', x2.toString())
-      line.setAttribute('y2', y2.toString())
+      line.setAttribute('x1', `${x1}`)
+      line.setAttribute('y1', `${y1}`)
+      line.setAttribute('x2', `${x2}`)
+      line.setAttribute('y2', `${y2}`)
 
       svgElement.appendChild(line)
       springsInSVG.push(line)
     })
   }
 
-  // Create Path
-  // TODO - Create Path Spline
+  // Create Paths
+  const pathInSVG = document.createElementNS(
+    svgElement.namespaceURI,
+    'path',
+  ) as SVGPathElement
+
+  if (elementsToCreate.path) {
+    // Apply path options
+    if (elementsToCreate.pathAttrs) {
+      Object.entries(elementsToCreate.pathAttrs).forEach(([attr, value]) => {
+        pathInSVG.setAttribute(attr, value)
+      })
+    }
+
+    svgElement.appendChild(pathInSVG)
+  }
 
   return {
     pointsInSVG,
     springsInSVG,
+    pathInSVG,
   }
 }
