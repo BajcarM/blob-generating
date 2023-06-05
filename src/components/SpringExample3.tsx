@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { styled } from '@stitches/react'
 import { animateSpringShape } from '../utils/springSimulations'
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
+import { Toggle } from '@radix-ui/react-toggle'
 
 export const SpringExample3 = () => {
   const svgRef = useRef<SVGSVGElement>(null)
@@ -11,6 +12,8 @@ export const SpringExample3 = () => {
     points: false,
     path: true,
   })
+
+  const [smoothTransition, setSmoothTransition] = useState(true)
 
   function handleVisualHelpersChange(value: string[]) {
     const updatedVisualHelpers = { ...visualHelpers }
@@ -45,6 +48,7 @@ export const SpringExample3 = () => {
   return (
     <>
       <StyledSVG
+        css={{ path: { transition: smoothTransition ? 'd 0.1s' : 'none' } }}
         xmlns="http://www.w3.org/2000/svg"
         ref={svgRef}
       />
@@ -58,6 +62,12 @@ export const SpringExample3 = () => {
           <StyledToggleItem value="points">Points</StyledToggleItem>
           <StyledToggleItem value="path">Path</StyledToggleItem>
         </StyledToggle>
+        <StyledSingleToggle
+          pressed={smoothTransition}
+          onPressedChange={() => setSmoothTransition((prev) => !prev)}
+        >
+          Smooth transition
+        </StyledSingleToggle>
       </StyledMenu>
     </>
   )
@@ -109,4 +119,8 @@ const StyledToggleItem = styled(ToggleGroup.Item, {
   '&:hover': {
     boxShadow: '0 0 0 1px #ff5257',
   },
+})
+
+const StyledSingleToggle = styled(Toggle, {
+  ...StyledToggleItem,
 })
