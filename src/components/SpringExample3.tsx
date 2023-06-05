@@ -34,8 +34,10 @@ export const SpringExample3 = () => {
       gravity: false,
       height: 300,
       width: 300,
-      maxDistanceBetweenPoints: 30,
-      mouseRadius: 30,
+      svgPadding: 100,
+      maxDistanceBetweenPoints: 20,
+      mouseRadius: 20,
+      mouseForceMagnitude: 5,
       pointMass: 2,
       springStiffness: 0.5,
       visualHelpers,
@@ -48,7 +50,10 @@ export const SpringExample3 = () => {
   return (
     <>
       <StyledSVG
-        css={{ path: { transition: smoothTransition ? 'd 0.1s' : 'none' } }}
+        css={{
+          path: { transition: smoothTransition ? 'd 0.1s' : 'none' },
+          border: 'none',
+        }}
         xmlns="http://www.w3.org/2000/svg"
         ref={svgRef}
       />

@@ -347,3 +347,86 @@ export function handlePointsWithMouseCollision(
 
   return updatedPoints
 }
+
+/**
+ * Handles collision between points and mouse by applying forces to the points.
+ *
+ * @param points - Array of points.
+ * @param mousePosition - The coordinates of the mouse [x, y].
+ * @param mouseRadius - The radius of the mouse interaction area.
+ * @param forceMagnitude - The magnitude of the force to be applied.
+ * @param centerOfShape - The coordinates of the center of the shape.
+ * @returns The updated array of points after handling collision.
+ */
+export function handleMouseCollisionThroughForces(
+  points: Point[],
+  mousePosition: Vector2D,
+  mouseRadius: number,
+  forceMagnitude: number,
+  centerOfShape: Vector2D,
+) {
+  const updatedPoints: Point[] = points.map((point) => {
+    const { position, forces } = point
+
+    const isIntersecting =
+      calculateDistanceBetweenPoints(mousePosition, position) < mouseRadius
+
+    if (!isIntersecting) {
+      // No collision, skip the point
+      return point
+    }
+
+    // Calculate distances
+    const centerToMouseDistance = calculateDistanceBetweenPoints(
+      mousePosition,
+      centerOfShape,
+    )
+    const pointToCenterDistance = calculateDistanceBetweenPoints(
+      position,
+      centerOfShape,
+    )
+    const pointToMouseDistance = calculateDistanceBetweenPoints(
+      mousePosition,
+      position,
+    )
+
+    const mouseIsOutsideOfShape = centerToMouseDistance > pointToCenterDistance
+
+    // Calculate the force magnitude using the Pythagorean theorem
+    const forceScaleFactor = Math.sqrt(
+      mouseRadius ** 2 - pointToMouseDistance ** 2,
+    )
+    const resultantForceMagnitude = forceScaleFactor * forceMagnitude
+
+    // Calculate the vector from the center of shape to the mouse
+    const centerToMouseVector = [
+      mousePosition[0] - centerOfShape[0],
+      mousePosition[1] - centerOfShape[1],
+    ]
+
+    // Normalize the centerToMouseVector
+    const normalizedCenterToMouseVector = [
+      centerToMouseVector[0] / centerToMouseDistance,
+      centerToMouseVector[1] / centerToMouseDistance,
+    ]
+
+    // Calculate the force vector
+    const forceVector: Vector2D = [
+      normalizedCenterToMouseVector[0] * resultantForceMagnitude,
+      normalizedCenterToMouseVector[1] * resultantForceMagnitude,
+    ]
+
+    // Adjust the orientation of the force vector based on whether the mouse is inside or outside the shape
+    if (mouseIsOutsideOfShape) {
+      forceVector[0] *= -1 // Reverse the X component
+      forceVector[1] *= -1 // Reverse the Y component
+    }
+
+    return {
+      ...point,
+      forces: [...forces, forceVector],
+    }
+  })
+
+  return updatedPoints
+}

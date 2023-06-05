@@ -6,11 +6,13 @@ import {
   updatePointsVelocityAndPosition,
   applyForcesBetweenPoints as updateForcesBetweenPoints,
   handlePointsWithMouseCollision,
+  handleMouseCollisionThroughForces,
 } from './springFunctions'
 
 type AnimationOptions = {
   height?: number
   width?: number
+  svgPadding?: number
   n?: number // superellipse n - sharpness of the shape
   maxDistanceBetweenPoints?: number
   springStiffness?: number
@@ -18,6 +20,7 @@ type AnimationOptions = {
   dampingCoefficient?: number
   gravity?: boolean
   mouseRadius?: number
+  mouseForceMagnitude?: number
   visualHelpers?: {
     points?: boolean
     springs?: boolean
@@ -198,6 +201,7 @@ export function animateSpringShape(
   {
     height = 400,
     width = 400,
+    svgPadding = 50,
     n = 1,
     maxDistanceBetweenPoints = 30,
     springStiffness = 0.1,
@@ -205,6 +209,7 @@ export function animateSpringShape(
     dampingCoefficient = 2,
     gravity = false,
     mouseRadius = 30,
+    mouseForceMagnitude = 30,
     visualHelpers = {
       points: true,
       springs: true,
@@ -213,7 +218,7 @@ export function animateSpringShape(
   }: AnimationOptions,
 ) {
   // Set the SVG element's dimensions
-  const svgPadding = maxDistanceBetweenPoints * 2 // TODO calculate it better
+
   const svgWidth = width + svgPadding * 2
   const svgHeight = height + svgPadding * 2
 
@@ -287,13 +292,21 @@ export function animateSpringShape(
 
     points = updateForcesBetweenPoints(springs, points, gravity)
 
+    points = handleMouseCollisionThroughForces(
+      points,
+      mousePosition,
+      mouseRadius,
+      mouseForceMagnitude,
+      [svgWidth / 2, svgHeight / 2],
+    )
+
     points = updatePointsVelocityAndPosition(
       points,
       dampingCoefficient,
       elapsedTime,
     )
 
-    points = handlePointsWithMouseCollision(points, mousePosition, mouseRadius)
+    // points = handlePointsWithMouseCollision(points, mousePosition, mouseRadius)
 
     // Update the pointsInSVG' positions
     if (visualHelpers.points) {
