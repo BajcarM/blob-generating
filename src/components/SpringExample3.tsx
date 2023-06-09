@@ -14,6 +14,7 @@ export const SpringExample3 = () => {
   })
 
   const [smoothTransition, setSmoothTransition] = useState(true)
+  const [moveRandomly, setMoveRandomly] = useState(false)
 
   function handleVisualHelpersChange(value: string[]) {
     const updatedVisualHelpers = { ...visualHelpers }
@@ -36,6 +37,7 @@ export const SpringExample3 = () => {
       width: 300,
       svgPadding: 100,
       maxDistanceBetweenPoints: 20,
+      moveRandomly,
       mouseRadius: 20,
       mouseForceMagnitude: 5,
       pointMass: 2,
@@ -45,7 +47,7 @@ export const SpringExample3 = () => {
 
     play()
     return stop
-  }, [visualHelpers])
+  }, [visualHelpers, moveRandomly])
 
   return (
     <>
@@ -72,6 +74,12 @@ export const SpringExample3 = () => {
           onPressedChange={() => setSmoothTransition((prev) => !prev)}
         >
           Smooth transition
+        </StyledSingleToggle>
+        <StyledSingleToggle
+          pressed={moveRandomly}
+          onPressedChange={() => setMoveRandomly((prev) => !prev)}
+        >
+          Move randomly
         </StyledSingleToggle>
       </StyledMenu>
     </>

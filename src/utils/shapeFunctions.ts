@@ -112,6 +112,7 @@ export function createSuperellipseSpringShape(
   // Create points for the skeleton and body
   const pointsOfSkeleton: Point[] = pointsCoords.map((point) => ({
     position: point,
+    origin: point,
     velocity: [0, 0],
     mass: pointMass,
     forces: [],
@@ -120,6 +121,7 @@ export function createSuperellipseSpringShape(
 
   const pointsOfBody: Point[] = pointsCoords.map((point) => ({
     position: point,
+    origin: point,
     velocity: [0, 0],
     mass: pointMass,
     forces: [],

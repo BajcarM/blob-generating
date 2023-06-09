@@ -2,6 +2,7 @@ export type Vector2D = [number, number]
 
 export type Point = {
   position: Vector2D // Coordinates of the point
+  origin: Vector2D // Coordinates of the point at the start of the simulation
   mass: number // Mass of the point
   velocity: Vector2D // Velocity vector of the point
   forces: Vector2D[] // Array of force vectors applied to the point
@@ -18,4 +19,12 @@ export type Spring = {
 export type SpringShape = {
   points: Point[]
   springs: Spring[]
+}
+
+export type PointForRandomMovement = {
+  position: Vector2D
+  origin: Vector2D
+  movementAngle: number
+  movementRadius: number
+  noiseTimeline: number
 }

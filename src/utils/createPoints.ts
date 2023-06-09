@@ -1,3 +1,5 @@
+import { Vector2D } from '../types'
+
 type PropsRect = {
   innerBoxWidth: number
   innerBoxHeight: number
@@ -179,6 +181,24 @@ export function createEllipsePoints({
     const y = centerY + radiusY * Math.sin(angle)
 
     points.push(generatePointObj(x, y, movementRadius, false))
+  }
+
+  return points
+}
+
+export function generatePointsOnCircle(
+  center: Vector2D,
+  radius: number,
+  numPoints: number,
+): Vector2D[] {
+  const points: Vector2D[] = []
+  const angleIncrement = (2 * Math.PI) / numPoints
+
+  for (let i = 0; i < numPoints; i++) {
+    const angle = i * angleIncrement
+    const x = center[0] + radius * Math.cos(angle)
+    const y = center[1] + radius * Math.sin(angle)
+    points.push([x, y])
   }
 
   return points

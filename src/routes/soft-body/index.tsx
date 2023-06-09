@@ -9,6 +9,7 @@ const SoftBody = () => {
   const [points, setPoints] = useState<Point[]>([
     {
       position: [200, 300],
+      origin: [200, 300],
       velocity: [0, 0],
       mass: 1,
       forces: [],
@@ -16,6 +17,7 @@ const SoftBody = () => {
     },
     {
       position: [400, 300],
+      origin: [400, 300],
       velocity: [0, 0],
       mass: 1,
       forces: [],
@@ -60,12 +62,18 @@ const SoftBody = () => {
         <SpringExample2 />
       </ContainerSection>
       <ContainerSection>
-        <h2 id="soft-body-full">Putting it All Together</h2>
+        <h2 id="soft-body-full">
+          Putting it All Together. Let's smash that button!!
+        </h2>
         <p>
           Let's bring everything together and create a spring body in the shape
           of a superellipse. This spring body will have the added effect of
           collision with the mouse. You can toggle the visibility of the points,
           springs, and path.
+        </p>
+        <p>
+          This example also has the random movement from simplex noise examples.
+          You can toggle it to make them wiggle!!
         </p>
         <SpringExample3 />
       </ContainerSection>

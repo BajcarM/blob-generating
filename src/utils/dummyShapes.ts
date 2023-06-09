@@ -3,6 +3,7 @@ import { Point, SpringShape, Spring } from '../types'
 export const DUMMY_POINTS: Point[] = [
   {
     position: [300, 300],
+    origin: [300, 300],
     velocity: [0, 0],
     mass: 1,
     forces: [],
@@ -10,6 +11,7 @@ export const DUMMY_POINTS: Point[] = [
   },
   {
     position: [550, 300],
+    origin: [550, 300],
     velocity: [0, 0],
     mass: 0.5,
     forces: [],
@@ -30,6 +32,7 @@ export const springShape2Points: SpringShape = {
   points: [
     {
       position: [300, 300],
+      origin: [300, 300],
       velocity: [0, 0],
       mass: 1,
       forces: [],
@@ -37,6 +40,7 @@ export const springShape2Points: SpringShape = {
     },
     {
       position: [550, 300],
+      origin: [550, 300],
       velocity: [0, 0],
       mass: 10,
       forces: [],

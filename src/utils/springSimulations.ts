@@ -1,3 +1,4 @@
+import { createNoise2D } from 'simplex-noise'
 import { Point, Spring, SpringShape, Vector2D } from '../types'
 import createCubicSpline from './createCubicSpline'
 import { createElementsInSVG } from './renderingFunctions'
@@ -8,6 +9,7 @@ import {
   handlePointsWithMouseCollision,
   handleMouseCollisionThroughForces,
 } from './springFunctions'
+import { moveSkeletonPointsRandomly } from './randomMovementFuncions'
 
 type AnimationOptions = {
   height?: number
@@ -15,6 +17,9 @@ type AnimationOptions = {
   svgPadding?: number
   n?: number // superellipse n - sharpness of the shape
   maxDistanceBetweenPoints?: number
+  moveRandomly?: boolean
+  speedCoefficientForRandomMovement?: number
+  radiusOfRandomMovement?: number
   springStiffness?: number
   pointMass?: number
   dampingCoefficient?: number
@@ -204,6 +209,9 @@ export function animateSpringShape(
     svgPadding = 50,
     n = 1,
     maxDistanceBetweenPoints = 30,
+    moveRandomly = true,
+    speedCoefficientForRandomMovement = 0.001,
+    radiusOfRandomMovement = 8,
     springStiffness = 0.1,
     pointMass = 2,
     dampingCoefficient = 2,
@@ -221,6 +229,7 @@ export function animateSpringShape(
 
   const svgWidth = width + svgPadding * 2
   const svgHeight = height + svgPadding * 2
+  const svgCenter: Vector2D = [svgWidth / 2, svgHeight / 2]
 
   svgElement.setAttribute('width', svgWidth.toString())
   svgElement.setAttribute('height', svgHeight.toString())
@@ -228,7 +237,7 @@ export function animateSpringShape(
 
   // Create the spring shape
   const springShape = createSuperellipseSpringShape(
-    [svgWidth / 2, svgHeight / 2],
+    svgCenter,
     width,
     height,
     n,
@@ -272,6 +281,10 @@ export function animateSpringShape(
     },
   )
 
+  // Create the simplex noise function
+  const noise2D = createNoise2D()
+  let noiseTimeline = 0
+
   // Track movement of the mouse relative to SVG for collision detection
   let mousePosition: Vector2D = [0, 0]
   svgElement.addEventListener('pointermove', (event) => {
@@ -290,6 +303,16 @@ export function animateSpringShape(
     const elapsedTime = Math.min(timestamp - previousTime, 17)
     previousTime = timestamp
 
+    if (moveRandomly) {
+      points = moveSkeletonPointsRandomly(
+        points,
+        svgCenter,
+        radiusOfRandomMovement,
+        noiseTimeline,
+        noise2D,
+      )
+    }
+
     points = updateForcesBetweenPoints(springs, points, gravity)
 
     points = handleMouseCollisionThroughForces(
@@ -297,7 +320,7 @@ export function animateSpringShape(
       mousePosition,
       mouseRadius,
       mouseForceMagnitude,
-      [svgWidth / 2, svgHeight / 2],
+      svgCenter,
     )
 
     points = updatePointsVelocityAndPosition(
@@ -305,8 +328,6 @@ export function animateSpringShape(
       dampingCoefficient,
       elapsedTime,
     )
-
-    // points = handlePointsWithMouseCollision(points, mousePosition, mouseRadius)
 
     // Update the pointsInSVG' positions
     if (visualHelpers.points) {
@@ -342,6 +363,9 @@ export function animateSpringShape(
 
       pathInSVG.setAttribute('d', path)
     }
+
+    // Update the noise timeline
+    noiseTimeline += elapsedTime * speedCoefficientForRandomMovement
 
     animationFrame = requestAnimationFrame(animate)
   }
