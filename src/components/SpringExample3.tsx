@@ -4,6 +4,28 @@ import { animateSpringShape } from '../utils/springSimulations'
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
 import { Toggle } from '@radix-ui/react-toggle'
 
+const ONCLICK_ANIMATIONS: {
+  pulse: {
+    animation: 'pulse'
+    durationInMs: number
+  }
+  smash: {
+    animation: 'smash'
+    durationInMs: number
+    canUnsmash: boolean
+  }
+} = {
+  pulse: {
+    animation: 'pulse',
+    durationInMs: 100,
+  },
+  smash: {
+    animation: 'smash',
+    durationInMs: 400,
+    canUnsmash: true,
+  },
+}
+
 export const SpringExample3 = () => {
   const svgRef = useRef<SVGSVGElement>(null)
 
@@ -13,7 +35,9 @@ export const SpringExample3 = () => {
     path: true,
   })
 
-  const [smoothTransition, setSmoothTransition] = useState(true)
+  const [onClickAnimation, setOnClickAnimation] =
+    useState<keyof typeof ONCLICK_ANIMATIONS>('smash')
+
   const [moveRandomly, setMoveRandomly] = useState(false)
 
   function handleVisualHelpersChange(value: string[]) {
@@ -38,22 +62,26 @@ export const SpringExample3 = () => {
       svgPadding: 100,
       maxDistanceBetweenPoints: 20,
       moveRandomly,
+      radiusOfRandomMovement: 5,
+      smoothnessOfRandomMovement: 1,
+      speedCoefficientForRandomMovement: 0.001,
       mouseRadius: 20,
       mouseForceMagnitude: 5,
       pointMass: 2,
       springStiffness: 0.5,
+
+      onClick: ONCLICK_ANIMATIONS[onClickAnimation],
       visualHelpers,
     })
 
     play()
     return stop
-  }, [visualHelpers, moveRandomly])
+  }, [visualHelpers, moveRandomly, onClickAnimation])
 
   return (
     <>
       <StyledSVG
         css={{
-          path: { transition: smoothTransition ? 'd 0.1s' : 'none' },
           border: 'none',
         }}
         xmlns="http://www.w3.org/2000/svg"
@@ -69,18 +97,23 @@ export const SpringExample3 = () => {
           <StyledToggleItem value="points">Points</StyledToggleItem>
           <StyledToggleItem value="path">Path</StyledToggleItem>
         </StyledToggle>
-        <StyledSingleToggle
-          pressed={smoothTransition}
-          onPressedChange={() => setSmoothTransition((prev) => !prev)}
-        >
-          Smooth transition
-        </StyledSingleToggle>
+
         <StyledSingleToggle
           pressed={moveRandomly}
           onPressedChange={() => setMoveRandomly((prev) => !prev)}
         >
           Move randomly
         </StyledSingleToggle>
+        <StyledToggle
+          type="single"
+          defaultValue={'smash'}
+          onValueChange={(value: keyof typeof ONCLICK_ANIMATIONS) =>
+            setOnClickAnimation(value)
+          }
+        >
+          <StyledToggleItem value="smash">Smash</StyledToggleItem>
+          <StyledToggleItem value="pulse">Pulse</StyledToggleItem>
+        </StyledToggle>
       </StyledMenu>
     </>
   )

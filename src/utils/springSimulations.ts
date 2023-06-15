@@ -9,7 +9,10 @@ import {
   handlePointsWithMouseCollision,
   handleMouseCollisionThroughForces,
 } from './springFunctions'
-import { moveSkeletonPointsRandomly } from './randomMovementFuncions'
+import {
+  movePointsFromCenter,
+  movePointsRandomly,
+} from './randomMovementFuncions'
 
 type AnimationOptions = {
   height?: number
@@ -20,12 +23,23 @@ type AnimationOptions = {
   moveRandomly?: boolean
   speedCoefficientForRandomMovement?: number
   radiusOfRandomMovement?: number
+  smoothnessOfRandomMovement?: number
   springStiffness?: number
   pointMass?: number
   dampingCoefficient?: number
   gravity?: boolean
   mouseRadius?: number
   mouseForceMagnitude?: number
+  onClick?:
+    | {
+        animation: 'pulse'
+        durationInMs: number
+      }
+    | {
+        animation: 'smash'
+        durationInMs: number
+        canUnsmash?: boolean
+      }
   visualHelpers?: {
     points?: boolean
     springs?: boolean
@@ -206,18 +220,23 @@ export function animateSpringShape(
   {
     height = 400,
     width = 400,
-    svgPadding = 50,
+    svgPadding = 100,
     n = 1,
     maxDistanceBetweenPoints = 30,
     moveRandomly = true,
     speedCoefficientForRandomMovement = 0.001,
     radiusOfRandomMovement = 8,
+    smoothnessOfRandomMovement = 1,
     springStiffness = 0.1,
     pointMass = 2,
     dampingCoefficient = 2,
     gravity = false,
     mouseRadius = 30,
     mouseForceMagnitude = 30,
+    onClick = {
+      animation: 'pulse',
+      durationInMs: 200,
+    },
     visualHelpers = {
       points: true,
       springs: true,
@@ -225,8 +244,9 @@ export function animateSpringShape(
     },
   }: AnimationOptions,
 ) {
-  // Set the SVG element's dimensions
+  const transitionPath = `all 100ms ease`
 
+  // Set the SVG element's dimensions
   const svgWidth = width + svgPadding * 2
   const svgHeight = height + svgPadding * 2
   const svgCenter: Vector2D = [svgWidth / 2, svgHeight / 2]
@@ -281,6 +301,8 @@ export function animateSpringShape(
     },
   )
 
+  pathInSVG.style.transition = transitionPath
+
   // Create the simplex noise function
   const noise2D = createNoise2D()
   let noiseTimeline = 0
@@ -294,6 +316,21 @@ export function animateSpringShape(
     mousePosition = [clientX - svgX, clientY - svgY]
   })
 
+  // If onClick animation is set, add event listener
+  if (onClick.animation === 'pulse') {
+    pathInSVG.addEventListener('pointerdown', () => pulse(onClick.durationInMs))
+  }
+
+  if (onClick.animation === 'smash') {
+    let isSmashed = false
+    pathInSVG.addEventListener('pointerdown', () => {
+      if (!onClick.canUnsmash && isSmashed) return
+
+      smash(onClick.durationInMs, isSmashed)
+      isSmashed = !isSmashed
+    })
+  }
+
   /**
    * Animation frame update function.
    *
@@ -304,12 +341,16 @@ export function animateSpringShape(
     previousTime = timestamp
 
     if (moveRandomly) {
-      points = moveSkeletonPointsRandomly(
+      points = movePointsRandomly(
         points,
         svgCenter,
         radiusOfRandomMovement,
+        smoothnessOfRandomMovement,
         noiseTimeline,
         noise2D,
+        {
+          onlyPoints: 'skeleton',
+        },
       )
     }
 
@@ -388,6 +429,83 @@ export function animateSpringShape(
 
     cancelAnimationFrame(animationFrame)
     animationFrame = null
+  }
+
+  /**
+   * Pulse animation.
+   */
+  function pulse(durationInMs: number) {
+    // Only for Path for now
+    if (!visualHelpers.path) return
+
+    // Stop the animation
+    stop()
+
+    // Set trasition
+    pathInSVG.style.transition = `d ${durationInMs}ms ease-in-out`
+
+    // Move points from center
+    points = movePointsFromCenter(points, svgCenter, 5, {
+      onlyPoints: 'body',
+    })
+
+    const bodyPoints = points.slice(0, points.length / 2)
+    const pointsCoords = bodyPoints.map((point) => point.position)
+
+    const path = createCubicSpline(pointsCoords, 1)
+
+    pathInSVG.setAttribute('d', path)
+
+    // Return back and play
+    setTimeout(() => {
+      pathInSVG.style.transition = transitionPath
+      play()
+    }, durationInMs)
+  }
+
+  /**
+   * Smash animation.
+   */
+  function smash(durationInMs: number, isSmashed: boolean) {
+    // Only for Path for now
+    if (!visualHelpers.path) return
+
+    // If already smashed, play and return
+    if (isSmashed) {
+      play()
+      setTimeout(
+        () => (pathInSVG.style.transition = transitionPath),
+        durationInMs,
+      )
+
+      return
+    }
+
+    // Stop the animation
+    stop()
+
+    // Set trasition
+    pathInSVG.style.transition = `d ${durationInMs}ms cubic-bezier(0,1.5,0.5,1)`
+
+    // Move to a random position
+    points = movePointsRandomly(
+      points,
+      svgCenter,
+      100,
+      0.7,
+      noiseTimeline,
+      noise2D,
+      {
+        onlyPoints: 'body',
+      },
+    )
+
+    const bodyPoints = points.slice(0, points.length / 2)
+    const pointsCoords = bodyPoints.map((point) => point.position)
+
+    const path = createCubicSpline(pointsCoords, 1)
+
+    pathInSVG.setAttribute('d', path)
   }
 
   return {
