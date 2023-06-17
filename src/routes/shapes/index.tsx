@@ -2,6 +2,7 @@ import { FC } from 'react'
 import ContainerSection from '../../components/sections/ContainerSection'
 import Superellipse1 from '../../components/shapes/Superelipse1'
 import Superellipse2 from '../../components/shapes/Superellipse2'
+import { ExampleUseInCSS } from '../../components/shapes/ExampleUseInCSS'
 
 export const Shapes: FC = () => {
   return (
@@ -74,6 +75,9 @@ export const Shapes: FC = () => {
           visually pleasing and realistic motion in our spring animations.
         </p>
         <Superellipse2 />
+      </ContainerSection>
+      <ContainerSection>
+        <ExampleUseInCSS />
       </ContainerSection>
     </div>
   )

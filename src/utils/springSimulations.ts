@@ -29,7 +29,7 @@ type AnimationOptions = {
   dampingCoefficient?: number
   gravity?: boolean
   mouseRadius?: number
-  mouseForceMagnitude?: number
+  mouseForceCoeficient?: number
   onClick?:
     | {
         animation: 'pulse'
@@ -224,15 +224,15 @@ export function animateSpringShape(
     n = 1,
     maxDistanceBetweenPoints = 30,
     moveRandomly = true,
-    speedCoefficientForRandomMovement = 0.001,
-    radiusOfRandomMovement = 8,
+    speedCoefficientForRandomMovement = 0.003,
+    radiusOfRandomMovement = 10,
     smoothnessOfRandomMovement = 1,
     springStiffness = 0.1,
     pointMass = 2,
     dampingCoefficient = 2,
     gravity = false,
-    mouseRadius = 30,
-    mouseForceMagnitude = 30,
+    mouseRadius = 50,
+    mouseForceCoeficient = 30,
     onClick = {
       animation: 'pulse',
       durationInMs: 200,
@@ -244,7 +244,7 @@ export function animateSpringShape(
     },
   }: AnimationOptions,
 ) {
-  const transitionPath = `all 100ms ease`
+  const transitionPath = `all 150ms ease`
 
   // Set the SVG element's dimensions
   const svgWidth = width + svgPadding * 2
@@ -309,11 +309,21 @@ export function animateSpringShape(
 
   // Track movement of the mouse relative to SVG for collision detection
   let mousePosition: Vector2D = [0, 0]
-  svgElement.addEventListener('pointermove', (event) => {
+  let mouseSpeedVector: Vector2D = [0, 0]
+  let lastMouseMoveTimestamp = 0
+
+  svgElement.addEventListener('mousemove', (event) => {
     const { x: svgX, y: svgY } = svgElement.getBoundingClientRect()
     const { clientX, clientY } = event
+    const timeElapsed = event.timeStamp - lastMouseMoveTimestamp
 
-    mousePosition = [clientX - svgX, clientY - svgY]
+    let newMousePosition: Vector2D = [clientX - svgX, clientY - svgY]
+    mouseSpeedVector = [
+      (newMousePosition[0] - mousePosition[0]) / timeElapsed,
+      (newMousePosition[1] - mousePosition[1]) / timeElapsed,
+    ]
+    mousePosition = newMousePosition
+    lastMouseMoveTimestamp = event.timeStamp
   })
 
   // If onClick animation is set, add event listener
@@ -356,13 +366,16 @@ export function animateSpringShape(
 
     points = updateForcesBetweenPoints(springs, points, gravity)
 
-    points = handleMouseCollisionThroughForces(
-      points,
-      mousePosition,
-      mouseRadius,
-      mouseForceMagnitude,
-      svgCenter,
-    )
+    // If mouse was moved recently, apply force to points
+    if (timestamp - lastMouseMoveTimestamp < 700) {
+      points = handleMouseCollisionThroughForces(
+        points,
+        mousePosition,
+        mouseSpeedVector,
+        mouseRadius,
+        mouseForceCoeficient,
+      )
+    }
 
     points = updatePointsVelocityAndPosition(
       points,
