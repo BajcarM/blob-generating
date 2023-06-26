@@ -7,7 +7,7 @@ import { ExampleUseInCSS } from '../../components/shapes/ExampleUseInCSS'
 export const Shapes: FC = () => {
   return (
     <div className="containerS">
-      <h1>Superellipses: A Geometric Wonder</h1>{' '}
+      <h1>Superellipses: A Geometric Wonder</h1>
       <ContainerSection>
         <figure>
           <img

@@ -1,4 +1,7 @@
-import { Point, Spring, SpringShape, Vector2D } from '../types'
+import { NoiseFunction3D } from 'simplex-noise'
+import { Point, Spring, SpringShape, Vector2D, WaveShape } from '../types'
+import { generatePointsOnCircle, generatePointsOnLine } from './createPoints'
+import createCubicSpline from './createCubicSpline'
 
 /**
  * Generates an SVG path string for a superellipse shape based on the provided center, width, height, and division factor.
@@ -151,4 +154,46 @@ export function createSuperellipseSpringShape(
 
   // Return the spring shape
   return { points, springs }
+}
+
+export function createStaticBlobShape(
+  center: Vector2D,
+  radius: number,
+  numPoints: number,
+  movementRadius: number,
+  noiseScaling: number,
+  noiseTimeline: number,
+  noise3DFunction: NoiseFunction3D,
+) {
+  const pointsOrigins = generatePointsOnCircle(center, radius, numPoints)
+
+  const pointsPositions = pointsOrigins.map((point) => {
+    const noiseValue = noise3DFunction(
+      point[0] * noiseScaling,
+      point[1] * noiseScaling,
+      noiseTimeline,
+    )
+
+    const normalizedOriginToCenterVector: Vector2D = [
+      (point[0] - center[0]) / radius,
+      (point[1] - center[1]) / radius,
+    ]
+
+    const pointPosition: Vector2D = [
+      point[0] +
+        normalizedOriginToCenterVector[0] * (noiseValue + 1) * movementRadius,
+      point[1] +
+        normalizedOriginToCenterVector[1] * (noiseValue + 1) * movementRadius,
+    ]
+
+    return pointPosition
+  })
+
+  const path = createCubicSpline(pointsPositions)
+
+  return {
+    pointsOrigins,
+    pointsPositions,
+    path,
+  }
 }

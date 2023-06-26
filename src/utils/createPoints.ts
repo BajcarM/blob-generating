@@ -191,15 +191,44 @@ export function generatePointsOnCircle(
   radius: number,
   numPoints: number,
 ): Vector2D[] {
-  const points: Vector2D[] = []
+  const pointsCoords: Vector2D[] = []
   const angleIncrement = (2 * Math.PI) / numPoints
 
   for (let i = 0; i < numPoints; i++) {
     const angle = i * angleIncrement
     const x = center[0] + radius * Math.cos(angle)
     const y = center[1] + radius * Math.sin(angle)
-    points.push([x, y])
+    pointsCoords.push([x, y])
   }
 
-  return points
+  return pointsCoords
+}
+
+export function generatePointsOnLine(
+  start: Vector2D,
+  end: Vector2D,
+  numPoints: number,
+  additionalPointsForSpline = true,
+): Vector2D[] {
+  const pointsCoords: Vector2D[] = []
+  const xIncrement = (end[0] - start[0]) / numPoints
+  const yIncrement = (end[1] - start[1]) / numPoints
+
+  if (additionalPointsForSpline) {
+    pointsCoords.push([start[0] - xIncrement, start[1] - yIncrement])
+  }
+
+  for (let i = 0; i < numPoints; i++) {
+    const x = start[0] + xIncrement * i
+    const y = start[1] + yIncrement * i
+    pointsCoords.push([x, y])
+  }
+
+  if (additionalPointsForSpline) {
+    pointsCoords.push([end[0], end[1]])
+    pointsCoords.push([end[0] + xIncrement, end[1] + yIncrement])
+    pointsCoords.push([end[0] + xIncrement * 2, end[1] + yIncrement * 2])
+  }
+
+  return pointsCoords
 }

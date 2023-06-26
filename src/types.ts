@@ -28,3 +28,11 @@ export type PointForRandomMovement = {
   movementRadius: number
   noiseTimeline: number
 }
+
+export type WaveShape = {
+  pointsOrigins: Vector2D[]
+  pointsPositions: Vector2D[]
+  pointsNoiseCoords: Vector2D[]
+  path: string
+  corners: [Vector2D, Vector2D]
+}

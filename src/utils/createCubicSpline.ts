@@ -1,16 +1,22 @@
 import { Vector2D } from '../types'
 
 /**
- * Creates a cubic spline path that goes through all the points and closes the path
+ * Creates a cubic spline path that goes through all the points and closes the path if needed
  * @returns d attribute for a path element
  */
-export default function createCubicSpline(points: Vector2D[], tension = 1) {
+export default function createCubicSpline(
+  points: Vector2D[],
+  tension = 1,
+  closed = true,
+) {
   const firstPoint = points[0]
   const secondPoint = points[1]
   const lastPoint = points[points.length - 1]
 
   // Add two extra points to the beginning and end of the array to allow the spline to go through the first and last point and close the path
-  const formattedPoints = [lastPoint, ...points, firstPoint, secondPoint]
+  const formattedPoints = closed
+    ? [lastPoint, ...points, firstPoint, secondPoint]
+    : points
 
   // Calculate the control points for each point and create the path
   const d = formattedPoints.reduce((acc, point, i, points) => {

@@ -1,4 +1,5 @@
-import { Point, Vector2D } from '../types'
+import { NoiseFunction3D } from 'simplex-noise'
+import { Point, Vector2D, WaveShape } from '../types'
 
 export function rotateVectorByRadians(
   vector: Vector2D,

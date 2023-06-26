@@ -38,7 +38,7 @@ export const SpringExample3 = () => {
   const [onClickAnimation, setOnClickAnimation] =
     useState<keyof typeof ONCLICK_ANIMATIONS>('smash')
 
-  const [moveRandomly, setMoveRandomly] = useState(false)
+  const [moveRandomly, setMoveRandomly] = useState(true)
 
   function handleVisualHelpersChange(value: string[]) {
     const updatedVisualHelpers = { ...visualHelpers }

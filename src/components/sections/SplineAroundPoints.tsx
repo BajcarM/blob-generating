@@ -2,6 +2,8 @@ import { styled } from '@stitches/react'
 import createCubicSpline from '../../utils/createCubicSpline'
 import RangeSlider from '../RangeSliderBase'
 import { useEffect, useReducer, useState } from 'react'
+import { createNoise3D } from 'simplex-noise'
+import { createStaticWaveShape } from '../../utils/waveFunctions'
 
 type Point = [number, number]
 
@@ -157,6 +159,46 @@ export default function SplineAroundPoints() {
           }
         />
       </StyledMenu>
+      <h2>Example wave</h2>
+      <StyledSVG
+        viewBox="0 0 1 1"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d={
+            createStaticWaveShape(
+              'bottom',
+              0.4,
+              10,
+              0.1,
+              2,
+              0,
+              1500,
+              createNoise3D(),
+            ).path
+          }
+          fill="none"
+          stroke="red"
+          strokeWidth="0.01"
+        />
+        {/* {createStaticWaveShape(
+          'bottom',
+          0.4,
+          10,
+          0.1,
+          2,
+          1500,
+          createNoise3D(),
+        ).pointsPositions.map(([x, y], i) => (
+          <circle
+            key={i}
+            cx={x}
+            cy={y}
+            r="0.01"
+            fill="red"
+          />
+        ))} */}
+      </StyledSVG>
     </>
   )
 }
