@@ -1,6 +1,6 @@
 import { NoiseFunction3D } from 'simplex-noise'
-import { Point, Spring, SpringShape, Vector2D, WaveShape } from '../types'
-import { generatePointsOnCircle, generatePointsOnLine } from './createPoints'
+import { Point, Spring, SpringShape, Vector2D } from '../types'
+import { generatePointsOnCircle } from './createPoints'
 import createCubicSpline from './createCubicSpline'
 
 /**

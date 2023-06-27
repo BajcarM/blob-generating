@@ -8,6 +8,7 @@ import Home from './routes/home/index.tsx'
 import RandomMovement from './routes/random-movement/index.tsx'
 import SoftBody from './routes/soft-body/index.tsx'
 import { Shapes } from './routes/shapes/index.tsx'
+import { Waves } from './routes/waves/index.tsx'
 
 const router = createHashRouter([
   {
@@ -22,6 +23,10 @@ const router = createHashRouter([
       {
         path: 'random-movement',
         element: <RandomMovement />,
+      },
+      {
+        path: 'waves',
+        element: <Waves />,
       },
       {
         path: 'soft-body',

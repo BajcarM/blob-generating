@@ -100,16 +100,16 @@ function getNoiseCoords(
   const noiseCoords = pointsOrigin.map((point) => {
     switch (position) {
       case 'top':
-        return [point[0], point[1] + noiseOffset]
+        return [point[0], point[1] * noiseOffset]
 
       case 'right':
-        return [point[0] - noiseOffset, point[1]]
+        return [point[0] * noiseOffset, point[1]]
 
       case 'bottom':
-        return [point[0], point[1] - noiseOffset]
+        return [point[0], point[1] * noiseOffset]
 
       case 'left':
-        return [point[0] + noiseOffset, point[1]]
+        return [point[0] * noiseOffset, point[1]]
     }
   })
 
@@ -222,12 +222,10 @@ export function animateWaveShapes(
     }
 
     const height =
-      minHeight + heightDifference * (index / (pathElements.length - 1))
+      maxHeight - heightDifference * (index / (pathElements.length - 1))
 
     return height
   })
-
-  console.log(heights)
 
   const noise3DFunction = createNoise3D()
   let noiseTimeline = 0

@@ -14,6 +14,10 @@ const NAVIGATION_LINKS = [
     text: 'Random Movement',
   },
   {
+    to: '/waves',
+    text: 'Waves',
+  },
+  {
     to: '/soft-body',
     text: 'Soft Body',
   },

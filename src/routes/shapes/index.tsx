@@ -3,6 +3,7 @@ import ContainerSection from '../../components/sections/ContainerSection'
 import Superellipse1 from '../../components/shapes/Superelipse1'
 import Superellipse2 from '../../components/shapes/Superellipse2'
 import { ExampleUseInCSS } from '../../components/shapes/ExampleUseInCSS'
+import { SquircleLib } from '../../components/shapes/SquircleLib'
 
 export const Shapes: FC = () => {
   return (
@@ -78,6 +79,10 @@ export const Shapes: FC = () => {
       </ContainerSection>
       <ContainerSection>
         <ExampleUseInCSS />
+      </ContainerSection>
+      <ContainerSection>
+        <h2>Squircle lib</h2>
+        <SquircleLib />
       </ContainerSection>
     </div>
   )

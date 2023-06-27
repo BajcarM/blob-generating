@@ -8,7 +8,7 @@ export default function createCubicSpline(
   points: Vector2D[],
   tension = 1,
   closed = true,
-) {
+): string {
   const firstPoint = points[0]
   const secondPoint = points[1]
   const lastPoint = points[points.length - 1]
