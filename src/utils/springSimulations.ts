@@ -24,7 +24,7 @@ type AnimationOptions = {
   speedCoefficientForRandomMovement?: number
   radiusOfRandomMovement?: number
   smoothnessOfRandomMovement?: number
-  springStiffness?: number
+  springStiffness?: { inBody: number; betweenBodyAndSkeleton: number }
   pointMass?: number
   dampingCoefficient?: number
   gravity?: boolean
@@ -227,7 +227,10 @@ export function animateSpringShape(
     speedCoefficientForRandomMovement = 0.003,
     radiusOfRandomMovement = 10,
     smoothnessOfRandomMovement = 1,
-    springStiffness = 0.1,
+    springStiffness = {
+      inBody: 0.1,
+      betweenBodyAndSkeleton: 0.1,
+    },
     pointMass = 2,
     dampingCoefficient = 2,
     gravity = false,
@@ -367,7 +370,7 @@ export function animateSpringShape(
     points = updateForcesBetweenPoints(springs, points, gravity)
 
     // If mouse was moved recently, apply force to points
-    if (timestamp - lastMouseMoveTimestamp < 700) {
+    if (timestamp - lastMouseMoveTimestamp < 150) {
       points = handleMouseCollisionThroughForces(
         points,
         mousePosition,

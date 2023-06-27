@@ -102,7 +102,7 @@ export function createSuperellipseSpringShape(
   height: number,
   n: number,
   maxDistanceBetweenPoints: number,
-  springStiffness: number,
+  springStiffness: { inBody: number; betweenBodyAndSkeleton: number },
   pointMass: number,
 ): SpringShape {
   // Generate the path and points on the path
@@ -138,7 +138,7 @@ export function createSuperellipseSpringShape(
     (_, index) => ({
       point1: index,
       point2: index + pointsCoords.length,
-      stiffness: springStiffness,
+      stiffness: springStiffness.betweenBodyAndSkeleton,
       restLength: 0,
     }),
   )
@@ -146,7 +146,7 @@ export function createSuperellipseSpringShape(
   const springsInBody: Spring[] = pointsCoords.map((_, index) => ({
     point1: index,
     point2: (index + 1) % pointsCoords.length,
-    stiffness: springStiffness,
+    stiffness: springStiffness.inBody,
     restLength: 0,
   }))
 

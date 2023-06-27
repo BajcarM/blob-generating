@@ -59,18 +59,22 @@ export const SpringExample3 = () => {
       gravity: false,
       height: 300,
       width: 300,
-      svgPadding: 100,
-      maxDistanceBetweenPoints: 20,
+      svgPadding: 200,
+      maxDistanceBetweenPoints: 10,
       moveRandomly,
       radiusOfRandomMovement: 10,
       smoothnessOfRandomMovement: 1,
       speedCoefficientForRandomMovement: 0.003,
-      mouseRadius: 50,
+      mouseRadius: 60,
       mouseForceCoeficient: 30,
-      pointMass: 2,
-      springStiffness: 0.5,
-
+      pointMass: 0.5,
+      springStiffness: {
+        inBody: 1,
+        betweenBodyAndSkeleton: 0.4,
+      },
+      dampingCoefficient: 3,
       onClick: ONCLICK_ANIMATIONS[onClickAnimation],
+
       visualHelpers,
     })
 
